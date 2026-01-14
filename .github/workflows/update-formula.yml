@@ -13,11 +13,13 @@ on:
       repository:
         description: 'Source repository (e.g., bjoernschotte/atlcli)'
         required: true
-        default: 'bjoernschotte/atlcli'
+        default: 'BjoernSchotte/atlcli'
 
 jobs:
   update:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -58,16 +60,15 @@ jobs:
           # Update version
           sed -i "s/version \".*\"/version \"${VERSION}\"/" "$FORMULA_FILE"
 
-          # Update SHA256 hashes
-          sed -i "s/sha256 \"PLACEHOLDER_DARWIN_ARM64\"/sha256 \"${SHAS[darwin-arm64]}\"/" "$FORMULA_FILE"
-          sed -i "s/sha256 \"PLACEHOLDER_DARWIN_X64\"/sha256 \"${SHAS[darwin-x64]}\"/" "$FORMULA_FILE"
-          sed -i "s/sha256 \"PLACEHOLDER_LINUX_ARM64\"/sha256 \"${SHAS[linux-arm64]}\"/" "$FORMULA_FILE"
-          sed -i "s/sha256 \"PLACEHOLDER_LINUX_X64\"/sha256 \"${SHAS[linux-x64]}\"/" "$FORMULA_FILE"
-
-          # Also update any existing real hashes (for subsequent updates)
-          # Match 64-char hex strings after sha256
-          sed -i -E "/(darwin-arm64|on_arm.*darwin)/{n;s/sha256 \"[a-f0-9]{64}\"/sha256 \"${SHAS[darwin-arm64]}\"/}" "$FORMULA_FILE"
-          sed -i -E "/(darwin-x64|on_intel.*darwin)/{n;s/sha256 \"[a-f0-9]{64}\"/sha256 \"${SHAS[darwin-x64]}\"/}" "$FORMULA_FILE"
+          # Update SHA256 hashes - handle both placeholders and real hashes
+          # For darwin-arm64
+          sed -i "/darwin-arm64/{n;s/sha256 \"[^\"]*\"/sha256 \"${SHAS[darwin-arm64]}\"/}" "$FORMULA_FILE"
+          # For darwin-x64
+          sed -i "/darwin-x64/{n;s/sha256 \"[^\"]*\"/sha256 \"${SHAS[darwin-x64]}\"/}" "$FORMULA_FILE"
+          # For linux-arm64
+          sed -i "/linux-arm64/{n;s/sha256 \"[^\"]*\"/sha256 \"${SHAS[linux-arm64]}\"/}" "$FORMULA_FILE"
+          # For linux-x64
+          sed -i "/linux-x64/{n;s/sha256 \"[^\"]*\"/sha256 \"${SHAS[linux-x64]}\"/}" "$FORMULA_FILE"
 
           echo "Updated $FORMULA_FILE:"
           cat "$FORMULA_FILE"
