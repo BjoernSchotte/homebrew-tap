@@ -1,0 +1,79 @@
+name: Update Formula
+
+on:
+  workflow_dispatch:
+    inputs:
+      formula:
+        description: 'Formula name (e.g., atlcli)'
+        required: true
+        default: 'atlcli'
+      tag:
+        description: 'Release tag (e.g., v0.2.0)'
+        required: true
+      repository:
+        description: 'Source repository (e.g., bjoernschotte/atlcli)'
+        required: true
+        default: 'bjoernschotte/atlcli'
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Update formula
+        run: |
+          FORMULA="${{ inputs.formula }}"
+          TAG="${{ inputs.tag }}"
+          REPO="${{ inputs.repository }}"
+          VERSION="${TAG#v}"
+
+          echo "Updating $FORMULA to $VERSION from $REPO"
+
+          # Download and calculate SHA256 for each platform
+          declare -A SHAS
+
+          for platform in darwin-arm64 darwin-x64 linux-arm64 linux-x64; do
+            URL="https://github.com/${REPO}/releases/download/${TAG}/${FORMULA}-${platform}.tar.gz"
+            echo "Downloading $URL..."
+
+            if curl -fsSL -o "/tmp/${platform}.tar.gz" "$URL"; then
+              SHA=$(sha256sum "/tmp/${platform}.tar.gz" | awk '{print $1}')
+              SHAS[$platform]=$SHA
+              echo "  SHA256: $SHA"
+            else
+              echo "  Failed to download $platform"
+              exit 1
+            fi
+          done
+
+          # Update the formula file
+          FORMULA_FILE="Formula/${FORMULA}.rb"
+
+          # Update version
+          sed -i "s/version \".*\"/version \"${VERSION}\"/" "$FORMULA_FILE"
+
+          # Update SHA256 hashes
+          sed -i "s/sha256 \"PLACEHOLDER_DARWIN_ARM64\"/sha256 \"${SHAS[darwin-arm64]}\"/" "$FORMULA_FILE"
+          sed -i "s/sha256 \"PLACEHOLDER_DARWIN_X64\"/sha256 \"${SHAS[darwin-x64]}\"/" "$FORMULA_FILE"
+          sed -i "s/sha256 \"PLACEHOLDER_LINUX_ARM64\"/sha256 \"${SHAS[linux-arm64]}\"/" "$FORMULA_FILE"
+          sed -i "s/sha256 \"PLACEHOLDER_LINUX_X64\"/sha256 \"${SHAS[linux-x64]}\"/" "$FORMULA_FILE"
+
+          # Also update any existing real hashes (for subsequent updates)
+          # Match 64-char hex strings after sha256
+          sed -i -E "/(darwin-arm64|on_arm.*darwin)/{n;s/sha256 \"[a-f0-9]{64}\"/sha256 \"${SHAS[darwin-arm64]}\"/}" "$FORMULA_FILE"
+          sed -i -E "/(darwin-x64|on_intel.*darwin)/{n;s/sha256 \"[a-f0-9]{64}\"/sha256 \"${SHAS[darwin-x64]}\"/}" "$FORMULA_FILE"
+
+          echo "Updated $FORMULA_FILE:"
+          cat "$FORMULA_FILE"
+
+      - name: Commit and push
+        run: |
+          git add Formula/
+          git commit -m "Update ${{ inputs.formula }} to ${{ inputs.tag }}"
+          git push
