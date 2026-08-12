@@ -1,0 +1,307 @@
+name: Update Dev Formula
+run-name: atlcli-dev ${{ inputs.request_id }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_repository:
+        description: Fixed upstream repository
+        required: true
+        type: string
+        default: BjoernSchotte/atlcli
+      dev_tag:
+        description: Immutable atlcli dev release tag
+        required: true
+        type: string
+      source_sha:
+        description: Full source commit SHA
+        required: true
+        type: string
+      request_id:
+        description: Unique source-workflow correlation ID
+        required: true
+        type: string
+      metadata_sha256:
+        description: Expected build-metadata.json SHA-256
+        required: true
+        type: string
+      checksums_sha256:
+        description: Expected checksums.txt SHA-256
+        required: true
+        type: string
+      rollback_from_tag:
+        description: Optional exact current tag authorizing a monotonic rollback
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: atlcli-dev-formula
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Validate immutable release and render candidate
+    runs-on: ubuntu-24.04
+    outputs:
+      artifact_name: ${{ steps.contract.outputs.artifact_name }}
+      base_commit: ${{ steps.contract.outputs.base_commit }}
+      changed: ${{ steps.contract.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate fixed workflow inputs
+        shell: bash
+        env:
+          SOURCE_REPOSITORY: ${{ inputs.source_repository }}
+          DEV_TAG: ${{ inputs.dev_tag }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          REQUEST_ID: ${{ inputs.request_id }}
+          METADATA_SHA256: ${{ inputs.metadata_sha256 }}
+          CHECKSUMS_SHA256: ${{ inputs.checksums_sha256 }}
+          ROLLBACK_FROM_TAG: ${{ inputs.rollback_from_tag }}
+        run: |
+          test "$SOURCE_REPOSITORY" = "BjoernSchotte/atlcli"
+          [[ "$DEV_TAG" =~ ^dev-[0-9]{8}\.[0-9]+\.[0-9]+-[0-9a-f]{8}$ ]]
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$REQUEST_ID" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]]
+          [[ "$METADATA_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$CHECKSUMS_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          if [ -n "$ROLLBACK_FROM_TAG" ]; then
+            [[ "$ROLLBACK_FROM_TAG" =~ ^dev-[0-9]{8}\.[0-9]+\.[0-9]+-[0-9a-f]{8}$ ]]
+          fi
+
+      - name: Download public release metadata and exact assets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_REPOSITORY: ${{ inputs.source_repository }}
+          DEV_TAG: ${{ inputs.dev_tag }}
+        run: |
+          gh api "repos/$SOURCE_REPOSITORY/releases/tags/$DEV_TAG" > release.json
+          gh api "repos/$SOURCE_REPOSITORY/git/ref/tags/$DEV_TAG" > tag-ref.json
+          mkdir release-assets
+          gh release download "$DEV_TAG" --repo "$SOURCE_REPOSITORY" --dir release-assets
+
+      - name: Validate provenance and render formula plus pointer
+        shell: bash
+        env:
+          SOURCE_REPOSITORY: ${{ inputs.source_repository }}
+          DEV_TAG: ${{ inputs.dev_tag }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          REQUEST_ID: ${{ inputs.request_id }}
+          METADATA_SHA256: ${{ inputs.metadata_sha256 }}
+          CHECKSUMS_SHA256: ${{ inputs.checksums_sha256 }}
+          ROLLBACK_FROM_TAG: ${{ inputs.rollback_from_tag }}
+        run: |
+          args=(
+            prepare
+            --release release.json
+            --tag-ref tag-ref.json
+            --assets release-assets
+            --tag "$DEV_TAG"
+            --source-sha "$SOURCE_SHA"
+            --source-repository "$SOURCE_REPOSITORY"
+            --request-id "$REQUEST_ID"
+            --metadata-sha256 "$METADATA_SHA256"
+            --checksums-sha256 "$CHECKSUMS_SHA256"
+            --current-pointer metadata/atlcli-dev.json
+            --output candidate
+            --receipt candidate/prepare-receipt.json
+          )
+          if [ -n "$ROLLBACK_FROM_TAG" ]; then
+            args+=(--rollback-from-tag "$ROLLBACK_FROM_TAG")
+          fi
+          ruby scripts/dev_release.rb "${args[@]}"
+
+      - name: Freeze candidate contract
+        id: contract
+        shell: bash
+        run: |
+          {
+            echo "artifact_name=atlcli-dev-candidate-${{ inputs.request_id }}-${{ github.run_id }}-${{ github.run_attempt }}"
+            echo "base_commit=$(ruby -rjson -e 'puts JSON.parse(File.read("candidate/prepare-receipt.json")).fetch("baseCommit")')"
+            echo "changed=$(ruby -rjson -e 'puts JSON.parse(File.read("candidate/prepare-receipt.json")).fetch("changed")')"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Upload validated candidate and source receipts
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.contract.outputs.artifact_name }}
+          path: |
+            candidate/
+            release.json
+            tag-ref.json
+            release-assets/build-metadata.json
+            release-assets/checksums.txt
+            release-assets/security-attestation.json
+            release-assets/source-eligibility.json
+          if-no-files-found: error
+          retention-days: 90
+
+  verify-native:
+    name: Brew install and switch (${{ matrix.target }})
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: linux-x64
+            runner: ubuntu-24.04
+          - target: linux-arm64
+            runner: ubuntu-24.04-arm
+          - target: darwin-x64
+            runner: macos-15-intel
+          - target: darwin-arm64
+            runner: macos-15
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+    env:
+      HOMEBREW_NO_ANALYTICS: "1"
+      HOMEBREW_NO_AUTO_UPDATE: "1"
+      HOMEBREW_NO_INSTALL_CLEANUP: "1"
+      ATLCLI_DISABLE_UPDATE_CHECK: "1"
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Download this run's validated candidate only
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ needs.prepare.outputs.artifact_name }}
+          path: proof
+
+      - name: Enable preinstalled Homebrew on Linux
+        if: runner.os == 'Linux'
+        shell: bash
+        run: echo "/home/linuxbrew/.linuxbrew/bin" >> "$GITHUB_PATH"
+
+      - name: Audit, install, test, and switch channels
+        shell: bash
+        run: |
+          brew tap-new atlcli-proof/tap
+          proof_tap="$(brew --repository atlcli-proof/tap)"
+          cp proof/candidate/Formula/atlcli-dev.rb "$proof_tap/Formula/atlcli-dev.rb"
+          cp Formula/atlcli.rb "$proof_tap/Formula/atlcli.rb"
+          formula="atlcli-proof/tap/atlcli-dev"
+          stable_formula="atlcli-proof/tap/atlcli"
+          brew audit --strict --formula "$formula"
+          brew uninstall --force atlcli atlcli-dev 2>/dev/null || true
+          brew install --formula "$formula"
+          brew test --formula "$formula"
+          "$(brew --prefix)/bin/atlcli" release-info --json --no-log > installed-release-info.json
+          brew info --json=v2 --formula "$formula" > brew-info.json
+          brew uninstall --force atlcli-dev
+          brew install --formula "$stable_formula"
+          set +e
+          brew install --formula "$formula" > conflict-output.txt 2>&1
+          conflict_status=$?
+          set -e
+          test "$conflict_status" -ne 0
+          ruby -rjson -e 'puts JSON.pretty_generate({schema:"atlcli.homebrew-dev-conflict/v1",stableInstalled:true,devInstallExit:Integer(ARGV.fetch(0)),conflictEnforced:true})' \
+            "$conflict_status" > conflict-verification.json
+          brew uninstall --force atlcli
+          brew install --formula "$formula"
+          "$(brew --prefix)/bin/atlcli" release-info --json --no-log > switched-release-info.json
+          cmp installed-release-info.json switched-release-info.json
+          brew uninstall --force atlcli-dev
+          brew untap atlcli-proof/tap
+
+      - name: Verify native identity and write sanitized receipt
+        shell: bash
+        run: |
+          ruby scripts/dev_release.rb verify-installed \
+            --pointer proof/candidate/metadata/atlcli-dev.json \
+            --release-info installed-release-info.json \
+            --target "${{ matrix.target }}" \
+            --receipt native-verification.json
+
+      - name: Upload native Homebrew receipts
+        uses: actions/upload-artifact@v7
+        with:
+          name: atlcli-dev-native-${{ matrix.target }}-${{ inputs.request_id }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            native-verification.json
+            conflict-verification.json
+            brew-info.json
+          if-no-files-found: error
+          retention-days: 90
+
+  publish:
+    name: Commit only the fully proven dev formula and pointer
+    needs: [prepare, verify-native]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Download this run's proven candidate
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ needs.prepare.outputs.artifact_name }}
+          path: proof
+
+      - name: Recheck base and apply only the allowlisted diff
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "${{ needs.prepare.outputs.base_commit }}"
+          expected_stable="$(ruby -rjson -e 'puts JSON.parse(File.read("proof/candidate/prepare-receipt.json")).fetch("stableFormulaSha256")')"
+          actual_stable="$(ruby -rdigest -e 'puts Digest::SHA256.file("Formula/atlcli.rb").hexdigest')"
+          test "$expected_stable" = "$actual_stable"
+          mkdir -p Formula metadata
+          cp proof/candidate/Formula/atlcli-dev.rb Formula/atlcli-dev.rb
+          cp proof/candidate/metadata/atlcli-dev.json metadata/atlcli-dev.json
+          git add Formula/atlcli-dev.rb metadata/atlcli-dev.json
+          changed="$(git diff --cached --name-only)"
+          test "$changed" = $'Formula/atlcli-dev.rb\nmetadata/atlcli-dev.json' || test -z "$changed"
+          test "$(ruby -rdigest -e 'puts Digest::SHA256.file("Formula/atlcli.rb").hexdigest')" = "$expected_stable"
+
+      - name: Commit and push exact candidate or prove no-op
+        id: publish
+        shell: bash
+        env:
+          REQUEST_ID: ${{ inputs.request_id }}
+          DEV_TAG: ${{ inputs.dev_tag }}
+        run: |
+          if git diff --cached --quiet -- Formula/atlcli-dev.rb metadata/atlcli-dev.json; then
+            echo "no-op: exact dev formula is already current"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git commit -m "Update atlcli-dev to $DEV_TAG"
+            git push
+          fi
+          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Write and upload publication receipt
+        shell: bash
+        env:
+          PUBLISHED_COMMIT: ${{ steps.publish.outputs.commit }}
+        run: |
+          ruby -rjson -rdigest -e '
+            pointer = JSON.parse(File.read("metadata/atlcli-dev.json"));
+            puts JSON.pretty_generate({
+              schema: "atlcli.homebrew-dev-publication/v1",
+              commit: ENV.fetch("PUBLISHED_COMMIT"),
+              formulaSha256: Digest::SHA256.file("Formula/atlcli-dev.rb").hexdigest,
+              pointer: pointer
+            })
+          ' > homebrew-dev-publication.json
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: atlcli-dev-publication-${{ inputs.request_id }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: homebrew-dev-publication.json
+          if-no-files-found: error
+          retention-days: 90
