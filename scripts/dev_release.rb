@@ -21,12 +21,14 @@ module AtlcliDevRelease
     atlcli-windows-x64.zip
   ].freeze
   BREW_ARCHIVES = (CLI_ARCHIVES - ["atlcli-windows-x64.zip"]).freeze
-  CONTROL_ASSETS = %w[
-    build-metadata.json
-    checksums.txt
+  DIGESTED_CONTROL_ASSETS = %w[
     security-attestation.json
     source-eligibility.json
   ].freeze
+  CONTROL_ASSETS = (%w[
+    build-metadata.json
+    checksums.txt
+  ] + DIGESTED_CONTROL_ASSETS).freeze
 
   module_function
 
@@ -133,10 +135,11 @@ module AtlcliDevRelease
 
     extension_name = "atlcli-extension-chrome-mv3-#{tag}.zip"
     payload_names = (CLI_ARCHIVES + [extension_name]).sort
+    checksummed_names = (payload_names + DIGESTED_CONTROL_ASSETS).sort
     metadata_artifacts = Array(metadata["artifacts"])
-    assert(metadata_artifacts.map { |asset| asset["name"] }.sort == payload_names, "metadata artifact inventory mismatch")
+    assert(metadata_artifacts.map { |asset| asset["name"] }.sort == checksummed_names, "metadata artifact inventory mismatch")
     checksum_records = parse_checksums(checksums_path)
-    assert(checksum_records.keys.sort == payload_names, "checksum artifact inventory mismatch")
+    assert(checksum_records.keys.sort == checksummed_names, "checksum artifact inventory mismatch")
     expected_release_names = (payload_names + CONTROL_ASSETS).sort
     release_assets = release_asset_map(release)
     assert(release_assets.keys.sort == expected_release_names, "GitHub release asset inventory mismatch")

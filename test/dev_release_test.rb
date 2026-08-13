@@ -26,7 +26,7 @@ class DevReleaseTest < Minitest::Test
       "veraPdfDigestOk" => true, "m1AcceptanceOk" => true, "checks" => []
     }
     File.write(File.join(assets, "security-attestation.json"), JSON.generate(security))
-    artifact_records = payloads.sort.map do |name|
+    artifact_records = (payloads + AtlcliDevRelease::DIGESTED_CONTROL_ASSETS).sort.map do |name|
       path = File.join(assets, name)
       { "name" => name, "size" => File.size(path), "sha256" => AtlcliDevRelease.sha256(path) }
     end
