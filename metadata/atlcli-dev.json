@@ -1,20 +1,20 @@
 {
   "schema": "atlcli.homebrew-dev-pointer/v1",
   "sourceRepository": "BjoernSchotte/atlcli",
-  "tag": "dev-20260813.26.1-8bea69a6",
+  "tag": "dev-20260813.28.1-8bea69a6",
   "sourceSha": "8bea69a68358621bb0503d7032289f4b4e23554e",
-  "formulaVersion": "20260813110455.26.1",
-  "upstreamHomebrewVersion": "20260813110455.26.1",
-  "metadataSha256": "d9886a859f4178b86f40290244f76a9d502f4a88dde7a54ac90e8afb73b49c3b",
-  "checksumsSha256": "ab168cb905590892b45b8bb25243675bdc7be5233e83164877d6e6811b0c2e22",
-  "requestId": "31693920643-1-dev-20260813.26.1-8bea69a6",
-  "releaseUrl": "https://github.com/BjoernSchotte/atlcli/releases/tag/dev-20260813.26.1-8bea69a6",
-  "releasePublishedAt": "2026-08-13T11:10:37Z",
+  "formulaVersion": "20260813112110.28.1",
+  "upstreamHomebrewVersion": "20260813112110.28.1",
+  "metadataSha256": "07eac20f4fa139c1654684c107ded2282de38825cf6f1eca6b2ad79eb5482899",
+  "checksumsSha256": "7c37f824bef44e341a3f5c4bfc4b898cae19c007ffa80cf8d90f1f29f18d72fd",
+  "requestId": "31695097444-1-dev-20260813.28.1-8bea69a6",
+  "releaseUrl": "https://github.com/BjoernSchotte/atlcli/releases/tag/dev-20260813.28.1-8bea69a6",
+  "releasePublishedAt": "2026-08-13T11:26:31Z",
   "rollbackFromTag": null,
   "archives": {
-    "atlcli-darwin-arm64.tar.gz": "f145ee2a21f7277a81e46b0908be84397ed97c8cb12772ee51cf73be8c11d0fa",
-    "atlcli-darwin-x64.tar.gz": "91c1edc1df32ab0026f9b095742f78a43b0ae7212d0be40e38b08a95081dee7f",
-    "atlcli-linux-arm64.tar.gz": "663656c638fd983c0b062da3b56074152dc846620211bbf37fa004af5582e02f",
-    "atlcli-linux-x64.tar.gz": "d3f2baa97412d966860e6d6cfbb9eb8cee16ad18e155436391de59c71878ac9c"
+    "atlcli-darwin-arm64.tar.gz": "c4f6c02de27762290e09617ce7fe64b884068f64bd188c9c8333682849408801",
+    "atlcli-darwin-x64.tar.gz": "5128ddd06106aa02f331473f12994c902a47d6490b7aec71cdc9a22596695462",
+    "atlcli-linux-arm64.tar.gz": "73c45de78a86eab10eefe4f62c08fb5e3f16a35322cc30d8f49c0f9be874a249",
+    "atlcli-linux-x64.tar.gz": "380f4bdea6995c922c4d4bcb5216e009337e9a6cbfab07f0a305ec99b9217f6d"
   }
 }
