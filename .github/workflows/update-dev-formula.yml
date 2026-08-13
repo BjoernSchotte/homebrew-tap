@@ -199,7 +199,7 @@ jobs:
           brew audit --strict --formula "$formula"
           brew uninstall --force atlcli atlcli-dev 2>/dev/null || true
           brew install --formula "$formula"
-          brew test --formula "$formula"
+          brew test "$formula"
           "$(brew --prefix)/bin/atlcli" release-info --json --no-log > installed-release-info.json
           brew info --json=v2 --formula "$formula" > brew-info.json
           brew uninstall --force atlcli-dev

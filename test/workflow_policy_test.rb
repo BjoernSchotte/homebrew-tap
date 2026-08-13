@@ -32,6 +32,8 @@ class WorkflowPolicyTest < Minitest::Test
     assert_includes workflow, "release-assets/source-eligibility.json"
     assert_includes workflow, "--rollback-from-tag"
     assert_includes workflow, "brew audit --strict"
+    assert_includes workflow, 'brew test "$formula"'
+    refute_includes workflow, "brew test --formula"
     assert_includes workflow, "git config --global user.name \"atlcli Homebrew proof\""
     assert_includes workflow, "brew tap-new atlcli-proof/tap"
     assert_includes workflow, "brew trust atlcli-proof/tap"
