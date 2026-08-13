@@ -1,20 +1,20 @@
 {
   "schema": "atlcli.homebrew-dev-pointer/v1",
   "sourceRepository": "BjoernSchotte/atlcli",
-  "tag": "dev-20260813.25.1-f341b388",
-  "sourceSha": "f341b388a5b8226e748c17a303dd47e20dd65964",
-  "formulaVersion": "20260813095527.25.1",
-  "upstreamHomebrewVersion": "20260813095527.25.1",
-  "metadataSha256": "82010548167e170854bbb7f1bec63dadff77b824ed72e111995d9815523ce87f",
-  "checksumsSha256": "d1b22be8fa65ea861961144e090e6fb7131285d56939d138078ddabf5cbbc6dc",
-  "requestId": "31688761192-1-dev-20260813.25.1-f341b388",
-  "releaseUrl": "https://github.com/BjoernSchotte/atlcli/releases/tag/dev-20260813.25.1-f341b388",
-  "releasePublishedAt": "2026-08-13T10:00:34Z",
+  "tag": "dev-20260813.26.1-8bea69a6",
+  "sourceSha": "8bea69a68358621bb0503d7032289f4b4e23554e",
+  "formulaVersion": "20260813110455.26.1",
+  "upstreamHomebrewVersion": "20260813110455.26.1",
+  "metadataSha256": "d9886a859f4178b86f40290244f76a9d502f4a88dde7a54ac90e8afb73b49c3b",
+  "checksumsSha256": "ab168cb905590892b45b8bb25243675bdc7be5233e83164877d6e6811b0c2e22",
+  "requestId": "31693920643-1-dev-20260813.26.1-8bea69a6",
+  "releaseUrl": "https://github.com/BjoernSchotte/atlcli/releases/tag/dev-20260813.26.1-8bea69a6",
+  "releasePublishedAt": "2026-08-13T11:10:37Z",
   "rollbackFromTag": null,
   "archives": {
-    "atlcli-darwin-arm64.tar.gz": "09d3dd6a205f36ca4171875f40658781e4b27fb7a87571c6c72b4df0f90e1588",
-    "atlcli-darwin-x64.tar.gz": "692f41e86821088c4ac406e2376a675a3f0f9642c50f75ce3fdb130f92e8ea42",
-    "atlcli-linux-arm64.tar.gz": "b8c88093947adafb75d8937b837cd728fdddbbff5f96700277d6bae70eef432a",
-    "atlcli-linux-x64.tar.gz": "80dfb10a9009af10147e245caf0a59663915ead0904cd0deda255e2b7bfea349"
+    "atlcli-darwin-arm64.tar.gz": "f145ee2a21f7277a81e46b0908be84397ed97c8cb12772ee51cf73be8c11d0fa",
+    "atlcli-darwin-x64.tar.gz": "91c1edc1df32ab0026f9b095742f78a43b0ae7212d0be40e38b08a95081dee7f",
+    "atlcli-linux-arm64.tar.gz": "663656c638fd983c0b062da3b56074152dc846620211bbf37fa004af5582e02f",
+    "atlcli-linux-x64.tar.gz": "d3f2baa97412d966860e6d6cfbb9eb8cee16ad18e155436391de59c71878ac9c"
   }
 }
