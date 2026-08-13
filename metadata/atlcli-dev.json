@@ -1,0 +1,20 @@
+{
+  "schema": "atlcli.homebrew-dev-pointer/v1",
+  "sourceRepository": "BjoernSchotte/atlcli",
+  "tag": "dev-20260813.25.1-f341b388",
+  "sourceSha": "f341b388a5b8226e748c17a303dd47e20dd65964",
+  "formulaVersion": "20260813095527.25.1",
+  "upstreamHomebrewVersion": "20260813095527.25.1",
+  "metadataSha256": "82010548167e170854bbb7f1bec63dadff77b824ed72e111995d9815523ce87f",
+  "checksumsSha256": "d1b22be8fa65ea861961144e090e6fb7131285d56939d138078ddabf5cbbc6dc",
+  "requestId": "31688761192-1-dev-20260813.25.1-f341b388",
+  "releaseUrl": "https://github.com/BjoernSchotte/atlcli/releases/tag/dev-20260813.25.1-f341b388",
+  "releasePublishedAt": "2026-08-13T10:00:34Z",
+  "rollbackFromTag": null,
+  "archives": {
+    "atlcli-darwin-arm64.tar.gz": "09d3dd6a205f36ca4171875f40658781e4b27fb7a87571c6c72b4df0f90e1588",
+    "atlcli-darwin-x64.tar.gz": "692f41e86821088c4ac406e2376a675a3f0f9642c50f75ce3fdb130f92e8ea42",
+    "atlcli-linux-arm64.tar.gz": "b8c88093947adafb75d8937b837cd728fdddbbff5f96700277d6bae70eef432a",
+    "atlcli-linux-x64.tar.gz": "80dfb10a9009af10147e245caf0a59663915ead0904cd0deda255e2b7bfea349"
+  }
+}
