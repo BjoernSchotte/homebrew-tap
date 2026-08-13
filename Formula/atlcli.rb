@@ -4,6 +4,8 @@ class Atlcli < Formula
   version "0.17.2"
   license "MIT"
 
+  conflicts_with "atlcli-dev", because: "both formulae install the atlcli executable"
+
   on_macos do
     on_arm do
       url "https://github.com/bjoernschotte/atlcli/releases/download/v#{version}/atlcli-darwin-arm64.tar.gz"

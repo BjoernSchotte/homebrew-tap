@@ -8,6 +8,11 @@ class DevReleaseTest < Minitest::Test
   SHA = "0123456789abcdef0123456789abcdef01234567"
   TAG = "dev-20260812.418.2-01234567"
 
+  def test_stable_formula_declares_the_reciprocal_channel_conflict
+    stable_formula = File.read(File.expand_path("../Formula/atlcli.rb", __dir__))
+    assert_includes stable_formula, 'conflicts_with "atlcli-dev", because: "both formulae install the atlcli executable"'
+  end
+
   def fixture(root, current: nil)
     FileUtils.mkdir_p(File.join(root, "Formula"))
     File.write(File.join(root, "Formula", "atlcli.rb"), "class Atlcli < Formula\nend\n")
