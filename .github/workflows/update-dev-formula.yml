@@ -187,7 +187,10 @@ jobs:
       - name: Audit, install, test, and switch channels
         shell: bash
         run: |
+          git config --global user.name "atlcli Homebrew proof"
+          git config --global user.email "atlcli-ci@example.invalid"
           brew tap-new atlcli-proof/tap
+          brew trust atlcli-proof/tap
           proof_tap="$(brew --repository atlcli-proof/tap)"
           cp proof/candidate/Formula/atlcli-dev.rb "$proof_tap/Formula/atlcli-dev.rb"
           cp Formula/atlcli.rb "$proof_tap/Formula/atlcli.rb"
