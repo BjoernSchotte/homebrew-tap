@@ -3,28 +3,28 @@ require "json"
 class AtlcliDev < Formula
   desc "Development channel for the Atlassian Confluence and Jira CLI"
   homepage "https://atlcli.sh"
-  version "20260814024231.34.1"
+  version "20260815030759.36.1"
   license "MIT"
 
   on_macos do
     on_arm do
-      url "https://github.com/BjoernSchotte/atlcli/releases/download/dev-20260814.34.1-e439c62f/atlcli-darwin-arm64.tar.gz"
-      sha256 "e8a8f5eb2c3d1ed334bdd91a988c8e1ec6df10d5cf3ed2524f81d6b7988b39af"
+      url "https://github.com/BjoernSchotte/atlcli/releases/download/dev-20260815.36.1-690a3974/atlcli-darwin-arm64.tar.gz"
+      sha256 "b9b49e153ff1b820c546e2d5df95cf3f663b2ca36e37db969b4f23f1af1177f9"
     end
     on_intel do
-      url "https://github.com/BjoernSchotte/atlcli/releases/download/dev-20260814.34.1-e439c62f/atlcli-darwin-x64.tar.gz"
-      sha256 "1554b437306b4297e82c1464507ddb21e70d57a17b7cf68392fe620ebb6e3750"
+      url "https://github.com/BjoernSchotte/atlcli/releases/download/dev-20260815.36.1-690a3974/atlcli-darwin-x64.tar.gz"
+      sha256 "dff2245d1be7bfae60e3d1c4ead1ddb4d936f40338adbcc93a94ae47a95ea8cc"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/BjoernSchotte/atlcli/releases/download/dev-20260814.34.1-e439c62f/atlcli-linux-arm64.tar.gz"
-      sha256 "14eb07a7f1a13f5ccb6858f284ae278b7d78dc968030815b95f14ebae423ae52"
+      url "https://github.com/BjoernSchotte/atlcli/releases/download/dev-20260815.36.1-690a3974/atlcli-linux-arm64.tar.gz"
+      sha256 "31d7733bb402a9d1a47c6ded5a7eca251b9896d37522efa3d0738f0a174044de"
     end
     on_intel do
-      url "https://github.com/BjoernSchotte/atlcli/releases/download/dev-20260814.34.1-e439c62f/atlcli-linux-x64.tar.gz"
-      sha256 "9775bca477c12edfb90ea8a7c08246c428b7985142da71e793116cf00a0103df"
+      url "https://github.com/BjoernSchotte/atlcli/releases/download/dev-20260815.36.1-690a3974/atlcli-linux-x64.tar.gz"
+      sha256 "7ded2c6583621e87ae30d04fa00e09641aedada36150e36f3f41ef02554e0735"
     end
   end
 
@@ -37,8 +37,8 @@ class AtlcliDev < Formula
   test do
     info = JSON.parse(shell_output("#{bin}/atlcli release-info --json --no-log"))
     assert_equal "dev", info.fetch("channel")
-    assert_equal "dev-20260814.34.1-e439c62f", info.fetch("releaseTag")
-    assert_equal "e439c62f318bee363045ef8beab62800704213f0", info.fetch("sourceSha")
-    assert_equal "20260814024231.34.1", info.fetch("homebrewVersion")
+    assert_equal "dev-20260815.36.1-690a3974", info.fetch("releaseTag")
+    assert_equal "690a39746373fe08159e1f1a36a118a3648837d8", info.fetch("sourceSha")
+    assert_equal "20260815030759.36.1", info.fetch("homebrewVersion")
   end
 end
