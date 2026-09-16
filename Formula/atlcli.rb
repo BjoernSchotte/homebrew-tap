@@ -4,8 +4,6 @@ class Atlcli < Formula
   version "0.17.2"
   license "MIT"
 
-  conflicts_with "atlcli-dev", because: "both formulae install the atlcli executable"
-
   on_macos do
     on_arm do
       url "https://github.com/bjoernschotte/atlcli/releases/download/v#{version}/atlcli-darwin-arm64.tar.gz"
@@ -27,6 +25,8 @@ class Atlcli < Formula
       sha256 "c4c368b7e981601ac5963f4f2e5e5a2737afb018eeac0f473dcb655210d91bd4"
     end
   end
+
+  conflicts_with "atlcli-dev", because: "both formulae install the atlcli executable"
 
   def install
     bin.install "atlcli"

@@ -11,6 +11,7 @@ class DevReleaseTest < Minitest::Test
   def test_stable_formula_declares_the_reciprocal_channel_conflict
     stable_formula = File.read(File.expand_path("../Formula/atlcli.rb", __dir__))
     assert_includes stable_formula, 'conflicts_with "atlcli-dev", because: "both formulae install the atlcli executable"'
+    assert_operator stable_formula.index("on_linux do"), :<, stable_formula.index("conflicts_with")
   end
 
   def test_all_formula_installers_preserve_optional_companion_and_notices
