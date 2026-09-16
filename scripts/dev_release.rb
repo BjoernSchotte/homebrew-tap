@@ -199,9 +199,17 @@ module AtlcliDevRelease
 
         def install
           bin.install "atlcli"
+          if File.exist?("atlcli-confluence-nfs")
+            bin.install "atlcli-confluence-nfs"
+            pkgshare.install "LICENSE-nfsserve", "THIRD-PARTY-nfs.html", "nfs-helper-build.json"
+          end
         end
 
         test do
+          if (bin/"atlcli-confluence-nfs").exist?
+            assert_match "atlcli-confluence-nfs", shell_output("\#{bin}/atlcli-confluence-nfs --version")
+            assert_path_exists pkgshare/"THIRD-PARTY-nfs.html"
+          end
           info = JSON.parse(shell_output("\#{bin}/atlcli release-info --json --no-log"))
           assert_equal "dev", info.fetch("channel")
           assert_equal "#{tag}", info.fetch("releaseTag")

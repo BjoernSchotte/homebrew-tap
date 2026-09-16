@@ -13,6 +13,44 @@ class DevReleaseTest < Minitest::Test
     assert_includes stable_formula, 'conflicts_with "atlcli-dev", because: "both formulae install the atlcli executable"'
   end
 
+  def test_all_formula_installers_preserve_optional_companion_and_notices
+    generated = AtlcliDevRelease.formula(homebrew_version: "1", tag: TAG, source_sha: SHA,
+      formula_version: "1", archive_digests: AtlcliDevRelease::CLI_ARCHIVES.to_h { |name| [name, "a" * 64] })
+    sources = ["atlcli", "atlcli-dev"].map { |name| File.read(File.expand_path("../Formula/#{name}.rb", __dir__)) } + [generated]
+    destination = Struct.new(:path) do
+      def install(*files)
+        FileUtils.mkdir_p(path)
+        FileUtils.mv(files, path)
+      end
+    end
+    sources.each do |source|
+      method = source[/^  def install\n.*?^  end$/m]
+      refute_nil method
+      implementation = Class.new { attr_accessor :bin, :pkgshare }
+      implementation.class_eval(method)
+      [false, true].each do |with_helper|
+        Dir.mktmpdir("atlcli-brew-install-") do |root|
+          instance = implementation.new
+          instance.bin = destination.new(File.join(root, "installed-bin"))
+          instance.pkgshare = destination.new(File.join(root, "installed-share"))
+          Dir.chdir(root) do
+            File.write("atlcli", "CLI")
+            companions = %w[atlcli-confluence-nfs LICENSE-nfsserve THIRD-PARTY-nfs.html nfs-helper-build.json]
+            companions.each { |name| File.write(name, name) } if with_helper
+            instance.install
+            assert_equal "CLI", File.read(File.join(instance.bin.path, "atlcli"))
+            if with_helper
+              assert_equal "atlcli-confluence-nfs", File.read(File.join(instance.bin.path, "atlcli-confluence-nfs"))
+              companions.drop(1).each { |name| assert_equal name, File.read(File.join(instance.pkgshare.path, name)) }
+            else
+              refute File.exist?(File.join(instance.bin.path, "atlcli-confluence-nfs"))
+            end
+          end
+        end
+      end
+    end
+  end
+
   def fixture(root, current: nil)
     FileUtils.mkdir_p(File.join(root, "Formula"))
     File.write(File.join(root, "Formula", "atlcli.rb"), "class Atlcli < Formula\nend\n")
