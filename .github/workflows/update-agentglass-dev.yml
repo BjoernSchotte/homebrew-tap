@@ -1,0 +1,104 @@
+name: Update agentglass-dev
+run-name: agentglass-dev ${{ inputs.request_id }}
+
+# dispatched by BjoernSchotte/agentglass dev-release.yml after a dev prerelease is complete;
+# commits Formula/agentglass-dev.rb + metadata/agentglass-dev.json only after native brew install tests pass
+on:
+  workflow_dispatch:
+    inputs:
+      dev_tag: { description: "agentglass dev release tag", required: true, type: string }
+      source_sha: { description: "full source commit SHA", required: true, type: string }
+      request_id: { description: "source-workflow correlation id", required: true, type: string }
+      metadata_sha256: { description: "expected build-metadata.json SHA-256", required: true, type: string }
+      checksums_sha256: { description: "expected SHA256SUMS SHA-256", required: true, type: string }
+
+permissions: { contents: read }
+concurrency: { group: agentglass-dev-formula, cancel-in-progress: false }
+
+jobs:
+  prepare:
+    name: Validate the prerelease and render the candidate
+    runs-on: ubuntu-24.04
+    outputs:
+      action: ${{ steps.render.outputs.action }}
+      base_commit: ${{ steps.render.outputs.base_commit }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - name: Validate inputs
+        env: { REQUEST_ID: "${{ inputs.request_id }}" }
+        run: echo "$REQUEST_ID" | grep -Eq '^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$'
+      - name: Download release metadata and assets
+        env: { GH_TOKEN: "${{ github.token }}", TAG: "${{ inputs.dev_tag }}" }
+        run: |
+          echo "$TAG" | grep -Eq '^dev-[0-9]{8}\.[1-9][0-9]*\.[1-9][0-9]*-[0-9a-f]{8}$'
+          gh release view "$TAG" -R BjoernSchotte/agentglass --json tagName,isDraft,isPrerelease > release.json
+          mkdir -p assets && gh release download "$TAG" -R BjoernSchotte/agentglass -D assets
+      - id: render
+        env:
+          TAG: ${{ inputs.dev_tag }}
+          SHA: ${{ inputs.source_sha }}
+          META: ${{ inputs.metadata_sha256 }}
+          SUMS: ${{ inputs.checksums_sha256 }}
+        run: |
+          ruby test/agentglass_dev_release_test.rb
+          out=$(ruby scripts/agentglass_dev_release.rb --release release.json --assets assets --tag "$TAG" --source-sha "$SHA" \
+            --metadata-sha256 "$META" --checksums-sha256 "$SUMS" --current-pointer metadata/agentglass-dev.json)
+          echo "$out"
+          { echo "action=${out%% *}"; echo "base_commit=$(git rev-parse HEAD)"; } >> "$GITHUB_OUTPUT"
+          mkdir -p candidate/Formula candidate/metadata
+          if [ "${out%% *}" = update ]; then cp Formula/agentglass-dev.rb candidate/Formula/; cp metadata/agentglass-dev.json candidate/metadata/; fi
+      - uses: actions/upload-artifact@v4
+        if: steps.render.outputs.action == 'update'
+        with: { name: "agentglass-dev-candidate-${{ github.run_id }}", path: candidate, retention-days: 7 }
+
+  verify-native:
+    name: brew install + test (${{ matrix.os }})
+    needs: prepare
+    if: needs.prepare.outputs.action == 'update'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix: { os: [ubuntu-24.04, macos-14] }
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/download-artifact@v4
+        with: { name: "agentglass-dev-candidate-${{ github.run_id }}", path: candidate }
+      - if: runner.os == 'Linux'
+        run: echo "/home/linuxbrew/.linuxbrew/bin" >> "$GITHUB_PATH"
+      - name: Audit, install, test, conflict with stable
+        run: |
+          git config --global user.name "agentglass Homebrew proof"
+          git config --global user.email "agentglass-ci@example.invalid"
+          brew tap-new agentglass-proof/tap
+          proof="$(brew --repository agentglass-proof/tap)"
+          cp candidate/Formula/agentglass-dev.rb "$proof/Formula/"
+          cp Formula/agentglass.rb "$proof/Formula/"
+          brew audit --strict --formula agentglass-proof/tap/agentglass-dev
+          brew install --formula agentglass-proof/tap/agentglass-dev
+          brew test agentglass-proof/tap/agentglass-dev
+          "$(brew --prefix)/bin/agentglass" --version --json
+          brew uninstall --force agentglass-dev
+          brew untap agentglass-proof/tap
+
+  publish:
+    name: Commit the proven formula and pointer
+    needs: [prepare, verify-native]
+    runs-on: ubuntu-24.04
+    permissions: { contents: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { name: "agentglass-dev-candidate-${{ github.run_id }}", path: candidate }
+      - env: { TAG: "${{ inputs.dev_tag }}" }
+        run: |
+          test "$(git rev-parse HEAD)" = "${{ needs.prepare.outputs.base_commit }}"
+          mkdir -p metadata
+          cp candidate/Formula/agentglass-dev.rb Formula/agentglass-dev.rb
+          cp candidate/metadata/agentglass-dev.json metadata/agentglass-dev.json
+          git add Formula/agentglass-dev.rb metadata/agentglass-dev.json
+          if git diff --cached --quiet; then echo "no-op"; exit 0; fi
+          git config user.name "github-actions[bot]"; git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "Update agentglass-dev to $TAG"
+          git push
