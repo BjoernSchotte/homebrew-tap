@@ -72,6 +72,7 @@ jobs:
           git config --global user.name "agentglass Homebrew proof"
           git config --global user.email "agentglass-ci@example.invalid"
           brew tap-new agentglass-proof/tap
+          brew trust agentglass-proof/tap   # current Homebrew refuses formulae from untrusted taps
           proof="$(brew --repository agentglass-proof/tap)"
           cp candidate/Formula/agentglass-dev.rb "$proof/Formula/"
           cp Formula/agentglass.rb "$proof/Formula/"
