@@ -1,28 +1,28 @@
 class Agentglass < Formula
   desc "See every coding agent on your machine — live, down to every tool call"
   homepage "https://github.com/BjoernSchotte/agentglass"
-  version "2026.9.2"
+  version "2026.10.1"
   license "Apache-2.0"
 
   on_macos do
     on_arm do
       url "https://github.com/BjoernSchotte/agentglass/releases/download/v#{version}/agentglass-darwin-arm64.tar.gz"
-      sha256 "d90614bbf995319ed34647321970045a307f96a2cdbcdac9e65d46cc84e4acb4"
+      sha256 "2e6999765213a8ca05c582ecb8b7f64e63c17c5ccaa6fac4ed1f866ce18a73a0"
     end
     on_intel do
       url "https://github.com/BjoernSchotte/agentglass/releases/download/v#{version}/agentglass-darwin-x64.tar.gz"
-      sha256 "0855aadf0a393f6a028ae6796b6f3b3944b5a0cc9c87783363e9937304b12da6"
+      sha256 "423a27dbd667f5327da88becceebb15779d62984e2e3831111c2d40337039de2"
     end
   end
 
   on_linux do
     on_arm do
       url "https://github.com/BjoernSchotte/agentglass/releases/download/v#{version}/agentglass-linux-arm64.tar.gz"
-      sha256 "4cb50e760d49817ebe0172e594ffea77a1bfc6efdc366c279007683838abb943"
+      sha256 "78cf660b5bdfec6bf20b4f71b1fdc1a3c369243d899dffe84dcd4c4d3b0a531c"
     end
     on_intel do
       url "https://github.com/BjoernSchotte/agentglass/releases/download/v#{version}/agentglass-linux-x64.tar.gz"
-      sha256 "67a961bcbc338ad82cd5e93c666710be61b5db2fc99b790ed14f3f70bb26aff4"
+      sha256 "e9a2e5c9de1abed3315dcedb50115c9907d5642bd607db2f783c25168d924f24"
     end
   end
 
