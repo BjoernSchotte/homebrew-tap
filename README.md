@@ -40,6 +40,9 @@ brew install bjoernschotte/tap/agentglass       # stable
 brew install bjoernschotte/tap/agentglass-dev   # daily dev build (conflicts with stable)
 ```
 
+Current Homebrew resolves the dev formula's conflict with the stable one only for trusted taps:
+run `brew trust bjoernschotte/tap` once (the same applies to `atlcli-dev`).
+
 ## Updating
 
 After a new release, run the "Update Formula" workflow from the Actions tab.
