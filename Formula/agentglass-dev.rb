@@ -3,28 +3,28 @@ require "json"
 class AgentglassDev < Formula
   desc "Development channel of agentglass (daily build of main)"
   homepage "https://github.com/BjoernSchotte/agentglass"
-  version "20261003.5.1"
+  version "20261007.9.1"
   license "Apache-2.0"
 
   on_macos do
     on_arm do
-      url "https://github.com/BjoernSchotte/agentglass/releases/download/dev-20261003.5.1-366c810d/agentglass-darwin-arm64.tar.gz"
-      sha256 "dd92d5c88577963201d9cb02989ea9b3cae320a90e8f0ce23bd9ac5912c4b6b8"
+      url "https://github.com/BjoernSchotte/agentglass/releases/download/dev-20261007.9.1-5024702a/agentglass-darwin-arm64.tar.gz"
+      sha256 "d443cb4d31e4872404a81830539407b9af59e7dc6830c56dc6249fb643a0ba49"
     end
     on_intel do
-      url "https://github.com/BjoernSchotte/agentglass/releases/download/dev-20261003.5.1-366c810d/agentglass-darwin-x64.tar.gz"
-      sha256 "f279563d23a2dabd36ffeed20f97da1509e5dab36953c41e59fe374a96e7021b"
+      url "https://github.com/BjoernSchotte/agentglass/releases/download/dev-20261007.9.1-5024702a/agentglass-darwin-x64.tar.gz"
+      sha256 "30336a13e42a00aa717cf15838c5e93195c937c341ce8dc9affd84955d777c93"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/BjoernSchotte/agentglass/releases/download/dev-20261003.5.1-366c810d/agentglass-linux-arm64.tar.gz"
-      sha256 "2c216370f956fbf4f247620e16057651f54c757d4d35e6bbbfa590d981dead39"
+      url "https://github.com/BjoernSchotte/agentglass/releases/download/dev-20261007.9.1-5024702a/agentglass-linux-arm64.tar.gz"
+      sha256 "b24d543cc94a0f07320768995f56ac5d065b0f04280ee907bd3113070920bc41"
     end
     on_intel do
-      url "https://github.com/BjoernSchotte/agentglass/releases/download/dev-20261003.5.1-366c810d/agentglass-linux-x64.tar.gz"
-      sha256 "9564cf1b9a5d3ded48d2713b93a384c19c27d87a1fc84805e8e79b43dc293985"
+      url "https://github.com/BjoernSchotte/agentglass/releases/download/dev-20261007.9.1-5024702a/agentglass-linux-x64.tar.gz"
+      sha256 "6feb0bbfea92744ff3c429bdce343728218a402013fe62af113eee49f3a2fa85"
     end
   end
 
@@ -37,7 +37,7 @@ class AgentglassDev < Formula
   test do
     info = JSON.parse(shell_output("#{bin}/agentglass --version --json"))
     assert_equal "dev", info.fetch("channel")
-    assert_equal "366c810d2afdf4248ba6a86e04af728767ea473a", info.fetch("commit")
-    assert_equal "2026.10.2-dev.20261003.5+366c810d", info.fetch("version")
+    assert_equal "5024702ac396da2f2eef9410619de9a272c57899", info.fetch("commit")
+    assert_equal "2026.10.9-dev.20261007.9+5024702a", info.fetch("version")
   end
 end
