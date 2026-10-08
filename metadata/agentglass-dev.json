@@ -1,16 +1,16 @@
 {
   "schema": "agentglass.homebrew-dev-pointer/v1",
   "sourceRepository": "BjoernSchotte/agentglass",
-  "tag": "dev-20261007.9.1-5024702a",
-  "sourceSha": "5024702ac396da2f2eef9410619de9a272c57899",
-  "version": "2026.10.9-dev.20261007.9+5024702a",
-  "formulaVersion": "20261007.9.1",
-  "metadataSha256": "fca27706e0d31acb74b7b3925e64314c05127aeb2acd039db7e677616faecd64",
-  "checksumsSha256": "6c51d5bc543ef2bfdeb5a3be34c6c4fad797a80480afea3759303734092e0417",
+  "tag": "dev-20261008.10.1-da8df49c",
+  "sourceSha": "da8df49cd0cde7b53f1147cfa33f91535887f110",
+  "version": "2026.10.10-dev.20261008.10+da8df49c",
+  "formulaVersion": "20261008.10.1",
+  "metadataSha256": "80dc3d7ffe479f979400e1317f6a61a4b4e5a402a35411103698ca0e3a2eae71",
+  "checksumsSha256": "4a2d3650cad276725843b202d4576324ded835a29f5b7e8fdd0ac8491f6fa737",
   "archives": {
-    "agentglass-darwin-arm64.tar.gz": "d443cb4d31e4872404a81830539407b9af59e7dc6830c56dc6249fb643a0ba49",
-    "agentglass-darwin-x64.tar.gz": "30336a13e42a00aa717cf15838c5e93195c937c341ce8dc9affd84955d777c93",
-    "agentglass-linux-arm64.tar.gz": "b24d543cc94a0f07320768995f56ac5d065b0f04280ee907bd3113070920bc41",
-    "agentglass-linux-x64.tar.gz": "6feb0bbfea92744ff3c429bdce343728218a402013fe62af113eee49f3a2fa85"
+    "agentglass-darwin-arm64.tar.gz": "f68fea5d9be8b36637f00e4dc9176f70125d202ab1c2556f7fea9cf3b1a7b0ca",
+    "agentglass-darwin-x64.tar.gz": "d1ec9e4359fa11aba6d53234149e8e6493d3f9ac2ec7609f85ff83b8e2af9d15",
+    "agentglass-linux-arm64.tar.gz": "61dc5bad1a159a8c68b6a00ddbfea960739047b82e1fab2764e1bef66897c042",
+    "agentglass-linux-x64.tar.gz": "2810ffeb6ab5ac66804731f841d4c0606884bb82575a7867931f5f73a4ed1fad"
   }
 }
