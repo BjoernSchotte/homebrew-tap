@@ -1,28 +1,28 @@
 class Agentglass < Formula
   desc "See every coding agent on your machine — live, down to every tool call"
   homepage "https://github.com/BjoernSchotte/agentglass"
-  version "2026.10.10"
+  version "2026.10.11"
   license "Apache-2.0"
 
   on_macos do
     on_arm do
       url "https://github.com/BjoernSchotte/agentglass/releases/download/v#{version}/agentglass-darwin-arm64.tar.gz"
-      sha256 "6a8c2520f5bbd836729972955d7484a2ffb1bc1930f6739b844ad17e20fca31f"
+      sha256 "6ac6d3b87080edd5dfa57b3fa9fa112c90afeecaeb6ea4a506e210fcdb33d246"
     end
     on_intel do
       url "https://github.com/BjoernSchotte/agentglass/releases/download/v#{version}/agentglass-darwin-x64.tar.gz"
-      sha256 "27d8c108753655b41c6808dae5dc2cd3e0d4559a400a3ee298adb49bd61721ed"
+      sha256 "7e02c97db33939d95f5468bd32fc477457cde304ebe0bcb7a9d38a8d36fef5c9"
     end
   end
 
   on_linux do
     on_arm do
       url "https://github.com/BjoernSchotte/agentglass/releases/download/v#{version}/agentglass-linux-arm64.tar.gz"
-      sha256 "1a4568252d91a884fd257cf5cb90262bc7bfaf8be9f7d74f7950c40fe33b47f0"
+      sha256 "04e21ba0ef3e96c3acd0f7c0c1c57a9d7645a4286e41713b8c9b9a734a323918"
     end
     on_intel do
       url "https://github.com/BjoernSchotte/agentglass/releases/download/v#{version}/agentglass-linux-x64.tar.gz"
-      sha256 "e718899888fb6fec7b56999ec1e2331a4d656e223408ee8d6bef6cece47d5476"
+      sha256 "05d0025511323ba10f52c5d0c013b65612b8e0d2137bb39d75591db2bc0e4eb5"
     end
   end
 
@@ -30,12 +30,14 @@ class Agentglass < Formula
 
   def install
     bin.install "agentglass"
+    bin.install "agentglass-mcp" # the MCP server: agentglass mcp install registers it with coding agents
     # agentglass receive with built-in HTTPS; a target whose TLS build failed ships without it
     bin.install "agentglass-receive-tls" if File.exist?("agentglass-receive-tls")
   end
 
   test do
     assert_match version.to_s, shell_output("#{bin}/agentglass --version")
+    assert_match version.to_s, shell_output("#{bin}/agentglass-mcp --version")
     if (bin/"agentglass-receive-tls").exist?
       assert_match version.to_s, shell_output("#{bin}/agentglass-receive-tls --version")
     end
