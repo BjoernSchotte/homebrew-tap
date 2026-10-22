@@ -1,20 +1,20 @@
 {
   "schema": "atlcli.homebrew-dev-pointer/v1",
   "sourceRepository": "BjoernSchotte/atlcli",
-  "tag": "dev-20261021.104.1-06588e35",
-  "sourceSha": "06588e35e27fbf67ef7bca5677b07af0b7a18b9f",
-  "formulaVersion": "20261021074607.104.1",
-  "upstreamHomebrewVersion": "20261021074607.104.1",
-  "metadataSha256": "3a7bf9a53de646f35e6f978ee686413741204540482fdf2158d6c64f24b7f096",
-  "checksumsSha256": "7a754711dd9fafc1eb3a97033f74a442292bd9521930f478b5a48d6b03cd89a9",
-  "requestId": "39564295112-1-dev-20261021.104.1-06588e35",
-  "releaseUrl": "https://github.com/BjoernSchotte/atlcli/releases/tag/dev-20261021.104.1-06588e35",
-  "releasePublishedAt": "2026-10-21T07:53:35Z",
+  "tag": "dev-20261022.105.1-fe2c9619",
+  "sourceSha": "fe2c96194c383e41ecc4cd3432f826cb19cd02d7",
+  "formulaVersion": "20261022074143.105.1",
+  "upstreamHomebrewVersion": "20261022074143.105.1",
+  "metadataSha256": "473af67309c44f4952892c7528e8d9692589ede3887c777741e9f85d14bf1434",
+  "checksumsSha256": "1ec54e8ca6b2c16ba1bfcc4538124df6834378598350bbde003b012fb88509b9",
+  "requestId": "39742259584-1-dev-20261022.105.1-fe2c9619",
+  "releaseUrl": "https://github.com/BjoernSchotte/atlcli/releases/tag/dev-20261022.105.1-fe2c9619",
+  "releasePublishedAt": "2026-10-22T07:48:42Z",
   "rollbackFromTag": null,
   "archives": {
-    "atlcli-darwin-arm64.tar.gz": "5fdd7de85eb80d2b9bd98c82c89de32e01e991645af884592c7282efafff2938",
-    "atlcli-darwin-x64.tar.gz": "5e4af9c83c5980017fabb1883f5545716f0b54000fc4eec71f8b9fed889dc925",
-    "atlcli-linux-arm64.tar.gz": "e9fbf2e3e68abf11625c4e970eff666a639beb102ac6a397e1a2c2e31b106580",
-    "atlcli-linux-x64.tar.gz": "0756cd7dbc18a7efd4f25c3f073f901c8c97be6ee48124258e8ebbbbae42d1c3"
+    "atlcli-darwin-arm64.tar.gz": "eb183e5b706700bd97dc152c4a82ff1062781eff4ef0fa24cf1dba3f8adc83f9",
+    "atlcli-darwin-x64.tar.gz": "d59b531338ae105dbdeb1ca69076ceb5f383b6cf4cea15cfc7c993bc345aded2",
+    "atlcli-linux-arm64.tar.gz": "6500189fffb5b3c7c7534d441666ac1ed6e55db3e683b77854d3f4b60d849e04",
+    "atlcli-linux-x64.tar.gz": "2493cda1ad6c539a7874548e1aefe6469dc5796bb996b6ff914ee0a19478f07b"
   }
 }
