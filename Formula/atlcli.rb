@@ -1,28 +1,28 @@
 class Atlcli < Formula
   desc "CLI for Atlassian Confluence and Jira"
   homepage "https://atlcli.sh"
-  version "2026.11.1"
+  version "2026.11.3"
   license "MIT"
 
   on_macos do
     on_arm do
       url "https://github.com/bjoernschotte/atlcli/releases/download/v#{version}/atlcli-darwin-arm64.tar.gz"
-      sha256 "fec8eab0b72c57a588fd1b9eaebcf685c39277396f5868791d827f59cb6e7b9f"
+      sha256 "5220f5709289de94683d5f95f57e7ec8bd364b3d358bf56d21de50aa9110664f"
     end
     on_intel do
       url "https://github.com/bjoernschotte/atlcli/releases/download/v#{version}/atlcli-darwin-x64.tar.gz"
-      sha256 "f4b582032e40b879b6174d4f9c263fa1ac2598dc340ffd813bdd6722e7f97d14"
+      sha256 "d582a28bbee623c935a3df6aaf4c4e957629abac801dca03df77e5d9e54f7a4e"
     end
   end
 
   on_linux do
     on_arm do
       url "https://github.com/bjoernschotte/atlcli/releases/download/v#{version}/atlcli-linux-arm64.tar.gz"
-      sha256 "2db078ee81b61fc7c172a0e73fe6f04300d49779db4ae284d463d7b23cfe8d14"
+      sha256 "b91abb12d5fb00d9e11d2e785975116b26934225660549b0311c3067119092e7"
     end
     on_intel do
       url "https://github.com/bjoernschotte/atlcli/releases/download/v#{version}/atlcli-linux-x64.tar.gz"
-      sha256 "590f7bb9d71f742b5d6552b7e3975f364ff4f838e2177d817b275f1084fb905c"
+      sha256 "c8ef0eafcd1399f8580b411e805630bd3d3467f6670bdb87170b0237586f8371"
     end
   end
 
